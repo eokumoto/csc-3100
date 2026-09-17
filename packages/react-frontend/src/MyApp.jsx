@@ -8,18 +8,32 @@ function MyApp() {
 
   function updateList(person) {
     postUser(person)
-      .then(() => setCharacters([...characters, person]))
+      .then((response) => {
+        if (response.status === 201) {
+          return response.json();
+        }
+      })
+      .then((newUser) => {
+        if (newUser) {
+          setCharacters([...characters, newUser]);
+        }
+      })
       .catch((error) => {
         console.log(error);
       });
   }
 
-  function removeOneCharacter(index) {
-    const updated = characters.filter((character, i) => {
-      return i !== index;
-    });
-    setCharacters(updated);
-  }
+function removeOneCharacter(index) {
+  fetch(`http://localhost:8000/users/${characters[index].id}`, {
+    method: 'DELETE',
+  })
+    .then((response) => {
+      if (response.status === 204) {
+        setCharacters(characters.filter((character, i) => i !== index));
+      }
+    })
+    .catch((error) => console.log(error));
+}
 
   useEffect(() => {
     fetchUsers()
