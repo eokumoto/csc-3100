@@ -100,7 +100,7 @@ const addUser = (user) => {
 app.post("/users", (req, res) => {
   const userToAdd = req.body;
   const newUser = { ...userToAdd };
-  newUser.id = Math.floor(Math.random() * 10000);
+  newUser.id = Math.floor(Math.random() * 10000).toString();
   users["users_list"].push(newUser);
   res.status(201).send(newUser);
 });
