@@ -1,6 +1,17 @@
 // backend.js
 import express from "express";
 import cors from "cors";
+import dotenv from "dotenv";
+import mongoose from "mongoose";
+
+dotenv.config();
+
+const { MONGO_CONNECTION_STRING } = process.env;
+
+mongoose.set("debug", true);
+mongoose
+  .connect(MONGO_CONNECTION_STRING + "users") // connect to Db "users"
+  .catch((error) => console.log(error));
 
 const app = express();
 const port = 8000;
@@ -51,18 +62,17 @@ const users = {
 };
 
 const findUserByNameAndJob = (name, job) =>
-    users["users_list"].filter(
-        (user) => user["name"] === name && user["job"] === job
-    );
+  users["users_list"].filter(
+    (user) => user["name"] === name && user["job"] === job,
+  );
 
 app.get("/users/:name/:job", (req, res) => {
-    const name = req.params["name"];
-    const job = req.params["job"];
-    let result = findUserByNameAndJob(name, job);
-    result = { users_list: result };
-    res.send(result);
+  const name = req.params["name"];
+  const job = req.params["job"];
+  let result = findUserByNameAndJob(name, job);
+  result = { users_list: result };
+  res.send(result);
 });
-
 
 const findUserByName = (name) => {
   return users["users_list"].filter((user) => user["name"] === name);
@@ -106,13 +116,13 @@ app.post("/users", (req, res) => {
 });
 
 const deleteUser = (id) => {
-    const user = findUserById(id);
-    users["users_list"] = users["users_list"].filter((u) => u !== user);
-    return user;
+  const user = findUserById(id);
+  users["users_list"] = users["users_list"].filter((u) => u !== user);
+  return user;
 };
 
 app.delete("/users/:id", (req, res) => {
-    const id = req.params["id"];
-    const userToDelete = deleteUser(id);
-    res.status(204).send();
+  const id = req.params["id"];
+  const userToDelete = deleteUser(id);
+  res.status(204).send();
 });
